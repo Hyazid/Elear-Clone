@@ -1,20 +1,29 @@
 import { useState } from "react";
 import axios from 'axios';
+import { toast } from "react-toastify";
+import Link from "next/link"
 
 const Register=()=>{
     const [name, setName]=useState('yazid');
     const [username, setUserName]=useState("hanniche");
     const [email, setEmail]  =useState("tazidhanniche@mail");
     const [password, setPassword]= useState("zeze");
-    const [profession, setProfession]= useState("zezezezeee");
+    const [profession, setProfession]= useState("Subscriber");
     const handleSubmit=async(e)=>{
         e.preventDefault()
+
+        try{
         alert("-->"+name+"---"+username+"---"+email+"---- "+password+"");
         const {data}= await axios.post("http://localhost:3001/api/register",
         {name, username, email, password, profession}
-        
+    
         );
         console.log("responding to registration--->"+data);
+        toast.success("Registration complete, please login")
+    }catch (err){
+        toast.error("Try aigain")
+    }
+
     }
 
     return(
@@ -72,7 +81,15 @@ const Register=()=>{
                 <br/>
                 <button className="btn btn-block btn-primary p-2"
                  >Submit</button>
-            </form>   
+            </form> 
+            <p className="text-center p-3">
+                Already registered ? 
+                <Link href="/Login">
+                    <a>
+                        login
+                    </a>
+                </Link>
+            </p>  
         </div>
         </>
     )

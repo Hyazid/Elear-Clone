@@ -1,14 +1,24 @@
 import { useState } from "react";
 import { Button } from 'react-bootstrap';
+import axios from 'axios';
+import { toast } from "react-toastify";
+import Link from "next/link"
 
 const Login =()=>{
     const [email, setEmail]=useState("");
     const [password, setPassword]= useState("");
 
 
-    const handleLogin=(e)=>{
+    const handleLogin=async(e)=>{
         e.prenventDefault();
-        alert("---->"+email+"----"+password);
+        try {
+            const {data }=await axios.post("http://localhost:3001/api/login",
+            {email, password}
+            );
+            console.log("responding to login--->"+data);
+        } catch (error) {
+            console.error("-->"+error);
+        }
 
     }
 
@@ -41,6 +51,14 @@ const Login =()=>{
 
 
             </form>
+            <p className="text-center p-3">
+                you didn't register ? 
+                <Link href="/Register">
+                    <a>
+                        register
+                    </a>
+                </Link>
+            </p>  
         </div>
         </>
     )
