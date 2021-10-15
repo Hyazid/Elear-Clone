@@ -1,5 +1,6 @@
  import User from '../models/user.js'
  import { hashed, comparPassword } from '../utils/auth.js';
+ import jwt from 'jsonwebtoken'
 
 export const register =async(req,res,next)=>{
    try{ 
@@ -31,6 +32,44 @@ export const register =async(req,res,next)=>{
     }catch(err){
         console.log(err);
         return res.status(400).send("errrooor try again ")
+    }
+
+}
+export const login=async(req,res, next)=>{
+    try{
+        console.log("login partt")
+        console.log(req.body);
+        const {email, password}= req.body;
+        //check if user in db 
+        const user = await User.findOne({email}).exec()
+        if(!user) return res.status(400).send("email not found");
+        //check password 
+        const checkPassword=await comparPassword(password, user.password)
+
+        //create jtoken sign 
+        const token =jwt.sign({_id: user._id}, process.env.JWT_SECRET, {expiresIn:'7d',});
+        //return the token to client, exclude hashed password
+        user.password=undefined;
+        //send token in cookie
+        res.cookie("token", token, {
+            httpOnly: true,
+        })
+        res.json(user)
+
+    }catch(err){
+         console.log(err);
+         return res.status(400).send("error in login")   
+    }
+}
+export const logout =async(req,res)=>{
+
+    try {
+        res.clearCookie("token");
+        return res.json({message:'signe out success'})
+        
+    } catch (err) {
+        console.log(err);
+         return res.status(400).send("error in logout")  
     }
 
 }
