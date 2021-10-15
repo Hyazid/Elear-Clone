@@ -1,21 +1,34 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Button } from 'react-bootstrap';
 import axios from 'axios';
 import { toast } from "react-toastify";
 import Link from "next/link"
+import {Context} from '../context/index.js'
+import router, {useRouter} from 'next/router'
 
 const Login =()=>{
     const [email, setEmail]=useState("");
     const [password, setPassword]= useState("");
-
+    const {state, dispatch}= useContext(Context)
+    console.log("STATE",state);
+    const router = useRouter()
 
     const handleLogin=async(e)=>{
-        e.prenventDefault();
+        e.preventDefault()
         try {
             const {data }=await axios.post("http://localhost:3001/api/login",
             {email, password}
             );
             console.log("responding to login--->"+data);
+            dispatch({
+                type:"LOGIN",
+                payload:data
+            })
+            //save in local storage 
+            window.localStorage.setItem('user', JSON.stringify(data));
+
+            //redirection to another page
+            router.push("/")
         } catch (error) {
             console.error("-->"+error);
         }
